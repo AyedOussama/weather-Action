@@ -37,9 +37,17 @@ jobs:
         response = requests.get(url)
 
         if response.status_code == 200:
-          soup = BeautifulSoup(response.text, "html.parser")
-          weather_output = soup.pre.get_text()
-          print(weather_output)
+          try:
+            soup = BeautifulSoup(response.text, "html.parser")
+            pre_tag = soup.find("pre")
+            if pre_tag:
+              weather_output = pre_tag.get_text()
+              print(weather_output)
+            else:
+              print(f"No <pre> tag found in weather data for {city}")
+          except Exception as e:
+            print(f"Error parsing weather data: {e}")
         else:
           print(f"Failed to retrieve weather data for {city}. Status code: {response.status_code}")
       shell: python
+
