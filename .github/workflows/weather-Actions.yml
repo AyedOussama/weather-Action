@@ -18,4 +18,4 @@ jobs:
           CITY: "New York"
         run: |
           echo "Fetching weather for $CITY"
-          curl wttr.in/"${CITY}"
+          curl "https://wttr.in/${CITY}?format=3"
