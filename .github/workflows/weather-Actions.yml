@@ -1,15 +1,21 @@
-name: Weather
+name: Weather Report
+
 on:
   push:
     branches:
       - main
+
 jobs:
-  weather:
+  display_weather:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
-      - env:
+        
+      - name: Display Weather
+        env:
           CITY: "New York"
-        name: Display Weather
-        run: curl wttr.in/${{ env.CITY }}
+        run: |
+          echo "Fetching weather for $CITY"
+          curl wttr.in/"${CITY}"
