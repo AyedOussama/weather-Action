@@ -1,4 +1,4 @@
-name: Weather
+name: Weather Check
 
 on:
   push:
@@ -17,15 +17,22 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y perl
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
         
     - name: Display Weather
       run: |
-        perl -e '
-          use LWP::Simple;
-          my $weather = get("http://wttr.in/$ENV{CITY}?m");
-          print $weather;
-        ' 2>/dev/null
+        import requests
+        from bs4 import BeautifulSoup
+
+        city = "${{ env.CITY }}"
+        url = f"https://wttr.in/{city}"
+        response = requests.get(url)
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        weather_output = soup.pre.get_text()
+
+        print(weather_output)
+      shell: python
