@@ -2,41 +2,44 @@ name: Weather Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   CITY: "New York" # Replace with your desired city
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Repository
+      uses: actions/checkout@v2
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v2
       with:
         python-version: '3.9'
         
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install requests beautifulsoup4
+    
     - name: Display Weather
       run: |
         import requests
         from bs4 import BeautifulSoup
 
         city = "${{ env.CITY }}"
-        url = f"https://wttr.in/{city}"
+        url = f"https://wttr.in/{city}?format=%c+%t+%w"  # Adjusted URL for weather format
         response = requests.get(url)
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        weather_output = soup.pre.get_text()
-
-        print(weather_output)
+        if response.status_code == 200:
+          soup = BeautifulSoup(response.text, "html.parser")
+          weather_output = soup.pre.get_text()
+          print(weather_output)
+        else:
+          print(f"Failed to retrieve weather data for {city}. Status code: {response.status_code}")
       shell: python
-    -name: install dependencies
-      run: |
-         python -m pip install --upgrade pip
-         pip install requests beautifulsoup4
