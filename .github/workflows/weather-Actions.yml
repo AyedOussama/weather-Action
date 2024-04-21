@@ -1,4 +1,4 @@
-name: Weather Check
+name: Weather
 
 on:
   push:
@@ -17,5 +17,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y perl
+        
     - name: Display Weather
-      run: curl wttr.in/${{ env.CITY }}
+      run: |
+        perl -e '
+          use LWP::Simple;
+          my $weather = get("http://wttr.in/$ENV{CITY}?m");
+          print $weather;
+        ' 2>/dev/null
